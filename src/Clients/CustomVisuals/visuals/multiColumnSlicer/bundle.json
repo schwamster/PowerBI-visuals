@@ -1,0 +1,30 @@
+{
+    "dateAdded": "2016-07-11T03:16:18.000Z",
+    "dateLastUpdated": "2016-02-24T20:54:49.000Z",
+    "package": {
+        "name": "MultiColumnSlicer",
+        "displayName": "Multi Column Slicer",
+        "guid": "MultiColumnSlicer1443303142064",
+        "version": "0.2.0",
+        "build": "13.0.1100.210",
+        "author": {
+            "name": "Microsoft",
+            "email": "pbicvsupport@microsoft.com"
+        },
+        "licenseTerms": "http://go.microsoft.com/fwlink/?LinkID=627540",
+        "privacyTerms": "http://go.microsoft.com/fwlink/?LinkID=627541",
+        "supportUrl": "http://community.powerbi.com",
+        "gitHubUrl": "https://github.com/Microsoft/PowerBI-visuals",
+        "description": "Slice your data with multiple columns",
+        "images": {
+            "icon": "icon.svg",
+            "screenshots": ["1.png"],
+            "thumbnail": "thumb.png"
+        },
+        "code": {
+            "typeScript": "MultiColumnSlicer.ts",
+            "javaScript": "MultiColumnSlicer.js",
+            "css": "MultiColumnSlicer.css"
+        }
+    }
+}
