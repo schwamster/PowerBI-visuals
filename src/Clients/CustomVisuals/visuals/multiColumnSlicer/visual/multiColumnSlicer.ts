@@ -3,10 +3,14 @@
 
 module powerbi.visuals.samples {
     import SelectionManager = utility.SelectionManager;
-    export interface MultiColumnSlicerViewModel {
+
+    export interface MultiColumnSlicerViewModel 
+    {
+        columns: MultiColumnInfo[];
+    }
+
+    export interface MultiColumnInfo {
         text: string;
-        color: string;
-        size: number;
         selector: SelectionId;
         toolTipInfo: TooltipDataItem[];
     }
@@ -17,20 +21,24 @@ module powerbi.visuals.samples {
         private root: D3.Selection;
         private svgText: D3.Selection;
         private svgSecondCategory: D3.Selection;
+        private svgContainer: D3.Selection;
         private dataView: DataView;
         private selectiionManager: SelectionManager;    
 
         public init(options: VisualInitOptions): void {
-            this.root = d3.select(options.element.get(0))
-                .append('svg')
-                .classed('hello', true);
+            var viewport = options.viewport;           
 
-            this.svgText = this.root
-                .append('text')
-                .style('cursor', 'pointer')
-                .attr('text-anchor', 'middle')
-                .text("huhu1");
-            
+            this.root = d3.select(options.element.get(0))
+                .append("div")
+                .style("height","100%")
+                .style("width", "100%")
+                .text("Loading...");
+
+            this.root.attr({
+                'height': viewport.height,
+                'width': viewport.width
+            });
+
             this.selectiionManager = new SelectionManager({ hostServices: options.host });
 
         }
@@ -41,63 +49,79 @@ module powerbi.visuals.samples {
             var viewport = options.viewport;
             var viewModel: MultiColumnSlicerViewModel = MultiColumnSlicer.converter(dataView);
 
-            this.root.attr({
-                'height': viewport.height,
-                'width': viewport.width
-            });
-
-            var textProperties = {
-                fontFamily: 'tahoma',
-                fontSize: viewModel.size + 'px',
-                text: viewModel.text
-            };
-            var textHeight = TextMeasurementService.estimateSvgTextHeight(textProperties);
+            this.root.text("");
             var selectionManager = this.selectiionManager;
 
-            this.svgText.style({
-                'fill': viewModel.color,
-                'font-size': textProperties.fontSize,
-                'font-family': textProperties.fontFamily,
-            }).attr({
-                'y': viewport.height / 2 + textHeight / 3 + 'px',
-                'x': viewport.width / 2,
-            }).text("IsToday")//viewModel.text)
-                .on('click', function () {
-                    selectionManager
-                        .select(viewModel.selector)
-                        .then(ids => {
-                            d3.select(this).style('stroke-width', ids.length > 0 ? '2px' : '0px');
-                            d3.select(this).style('fill', ids.length > 0 ? viewModel.color : "green");
-                            console.log(ids);
-                        }
-                        );
-                })
-                .data([viewModel]);
-
-            var x = this.root;
-                x.append("foreignObject")
-                .attr("width", 100)
-                .attr("height", 100)
-                .attr({
-                'y': viewport.height / 2 + textHeight / 3 + 'px',
-                'x': viewport.width / 2,
+            for(var i = 0; i < viewModel.columns.length;i++)
+            { 
+                var column: MultiColumnInfo = viewModel.columns[i];
+                var category = this.root
+                    .append('text')
+                    .attr("id", `col${i}`)
+                    .text(`${column.text}`)
+                    .style('cursor', 'pointer')
+                    .style('background-color', 'transparent')
+                    .on('click', function () {
+                        selectionManager
+                            .select(column.selector)
+                            .then(ids => {
+                                d3.select(this).style('stroke-width', ids.length > 0 ? '2px' : '0px');
+                                d3.select(this).style('background-color', ids.length > 0 ? "grey" : "transparent");
+                                console.log(ids);
+                            }
+                            );
                     })
-                .append("xhtml:body")
-                .html("<form><input type=checkbox id=check />hehe</form>")
-                .on("click", function(d, i){
-                    console.log(x.select("#check").node().getAttribute("checked"));
-                    selectionManager
-                        .select(viewModel.selector)
-                        .then(ids => {
-                            d3.select(this).style('stroke-width', ids.length > 0 ? '2px' : '0px');
-                            d3.select(this).style('color', ids.length > 0 ? viewModel.color : "green");
-                            console.log(ids);
-                        }
-                        );
-                }).data([viewModel]);
+                    .data([column]);
+
+                this.root.append("br");
+
+                TooltipManager.addTooltip(category, (tooltipEvent: TooltipEvent) => tooltipEvent.data.toolTipInfo);
+                
+            }
+        }
+
+        public static converter(dataView: DataView): MultiColumnSlicerViewModel {
 
 
-            TooltipManager.addTooltip(this.svgText, (tooltipEvent: TooltipEvent) => tooltipEvent.data.toolTipInfo);
+           var viewModel: MultiColumnSlicerViewModel = {
+               columns: []
+           };
+
+            for(var ci = 0; ci < dataView.categorical.categories.length; ci++)
+            {
+                var category = dataView.categorical.categories[ci];
+                if(!category) continue;
+
+                var queryName = category.source.queryName;
+                var tableName = queryName.substr(0, queryName.indexOf("."));
+                var fieldName = queryName.substr(queryName.indexOf(".") + 1);
+                var fieldExpr = powerbi.data.SQExprBuilder.fieldExpr({ column: { schema: 's', entity: tableName, name: fieldName} });
+                var expr = powerbi.data.SQExprBuilder.equal(fieldExpr, powerbi.data.SQExprBuilder.boolean(true));  
+                var cid = powerbi.data.createDataViewScopeIdentity(expr);                    
+
+                var columnInfo: MultiColumnInfo = {
+                    text:`${ci} - ${category.source.displayName}`,
+                    toolTipInfo: [{
+                        displayName: `${category.identity.length} - ${tableName} / ${fieldName}`,
+                        value: 'true',
+                    }],
+                    selector: SelectionId.createWithId(cid),
+                };
+
+                viewModel.columns.push(columnInfo);
+            }
+
+            var table = dataView.table;
+            if (!table) return viewModel;
+
+            // viewModel.text = dataView.categorical.categories[0].values[0];
+            // if (dataView.categorical) {
+            //     viewModel.selector = dataView.categorical.categories[0].identity
+            //         ? SelectionId.createWithId(dataView.categorical.categories[0].identity[0])
+            //         : SelectionId.createNull();
+            // }
+
+            return viewModel;
         }
 
         public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstance[] {
@@ -144,17 +168,12 @@ module powerbi.visuals.samples {
                     kind: VisualDataRoleKind.Grouping,
                     displayName: 'Category',
                 },
-                // {
-                //     name: 'Values',
-                //     kind: VisualDataRoleKind.GroupingOrMeasure,
-                //     displayName: 'Values'
-                // }
                 ],
             dataViewMappings: [{
                 categorical: {
                     categories: {
                     for: { in: 'Category'},
-                    dataReductionAlgorithm: {top:{}}
+                    //dataReductionAlgorithm: {top:{}}
                 }},
                 // table: {
                 //     rows: {
@@ -193,31 +212,7 @@ module powerbi.visuals.samples {
             },
         };
 
-        public static converter(dataView: DataView): MultiColumnSlicerViewModel {
-           
-            var viewModel: MultiColumnSlicerViewModel = {
-                size: MultiColumnSlicer.getSize(dataView),
-                color: MultiColumnSlicer.getFill(dataView).solid.color,
-                text: MultiColumnSlicer.DefaultText,
-                toolTipInfo: [{
-                    displayName: 'Test',
-                    value: '1...2....3... can you see me? I am sending random strings to the tooltip',
-                }],
-                selector: SelectionId.createNull()
-            };
-            var table = dataView.table;
-            if (!table) return viewModel;
-
-            //viewModel.text = table.rows[0][0];
-            viewModel.text = dataView.categorical.categories[0].values[0];
-            if (dataView.categorical) {
-                viewModel.selector = dataView.categorical.categories[0].identity
-                    ? SelectionId.createWithId(dataView.categorical.categories[0].identity[0])
-                    : SelectionId.createNull();
-            }
-
-            return viewModel;
-        }
+        
 
          private static getFill(dataView: DataView): Fill {
             if (dataView) {
