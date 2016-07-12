@@ -32,6 +32,7 @@ require("./visuals/streamGraph/visual/streamGraph.ts");
 require("./visuals/pulseChart/visual/pulseChart.ts");
 require("./visuals/lineDotChart/visual/lineDotChart.ts");
 require("./visuals/sunburst/visual/sunburst.ts");
+require("./visuals/multiColumnSlicer/visual/multiColumnSlicer.ts");
 require("./plugins.ts");
 
 function requireAll(requireContext) {

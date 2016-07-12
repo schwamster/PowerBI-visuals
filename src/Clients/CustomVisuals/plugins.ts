@@ -34,6 +34,12 @@ module powerbi.visuals.plugins {
         create: () => new samples.Sunburst()
     };
 
+    export let multiColumnSlicer: IVisualPlugin = {
+        name: 'multiColumnSlicer',
+        capabilities: samples.MultiColumnSlicer.capabilities,
+        create: () => new samples.MultiColumnSlicer()
+    };
+
     export let asterPlot: IVisualPlugin = {
         name: 'asterPlot',
         capabilities: samples.AsterPlot.capabilities,

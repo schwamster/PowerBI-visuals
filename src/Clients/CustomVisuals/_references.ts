@@ -24,4 +24,5 @@
 /// <reference path="./visuals/pulseChart/visual/pulseChart.ts"/>
 /// <reference path="./visuals/lineDotChart/visual/lineDotChart.ts"/>
 /// <reference path="./visuals/sunburst/visual/sunburst.ts"/>
+/// <reference path="./visuals/multiColumnSlicer/visual/multiColumnSlicer.ts"/>
 /// <reference path="./plugins.ts"/>
