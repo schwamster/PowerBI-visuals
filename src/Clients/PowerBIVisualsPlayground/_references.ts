@@ -27,6 +27,7 @@
 /// <reference path="./sampleDataViews/SimpleDataByCountries.ts"/>
 /// <reference path="./sampleDataViews/SimpleCountriesData.ts"/>
 /// <reference path="./sampleDataViews/BulletChartData.ts"/>
+/// <reference path="./sampleDataViews/MultiColumnFilterData.ts"/>
 /// <reference path="./sampleData.ts"/>
 /// <reference path="./hostControls.ts"/>
 /// <reference path="./visualPluginService.ts"/>

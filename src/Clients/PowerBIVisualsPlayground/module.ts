@@ -37,6 +37,7 @@ require("./sampleDataViews/SimpleHistogramData.ts");
 require("./sampleDataViews/SimpleDataByCountries.ts");
 require("./sampleDataViews/SimpleCountriesData.ts");
 require("./sampleDataViews/BulletChartData.ts");
+require("./sampleDataViews/MultiColumnFilterData.ts");
 require("./sampleData.ts");
 require("./hostControls.ts");
 require("./visualPluginService.ts");
