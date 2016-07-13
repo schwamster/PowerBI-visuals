@@ -57,15 +57,18 @@ module powerbi.visuals.samples {
                 var column: MultiColumnInfo = viewModel.columns[i];
                 var category = this.root
                     .append('text')
+                    .attr("class", "multiColumnSlicerCategory")
                     .attr("id", `col${i}`)
                     .text(`${column.text}`)
                     .style('cursor', 'pointer')
                     .style('background-color', 'transparent')
                     .on('click', function () {
+                        var localColumn = column;
                         selectionManager
-                            .select(column.selector)
+                            .select(this.__data__.selector)
                             .then(ids => {
-                                d3.select(this).style('stroke-width', ids.length > 0 ? '2px' : '0px');
+                            
+                                d3.selectAll(".multiColumnSlicerCategory").style("background-color", "transparent");
                                 d3.select(this).style('background-color', ids.length > 0 ? "grey" : "transparent");
                                 console.log(ids);
                             }
@@ -100,7 +103,7 @@ module powerbi.visuals.samples {
                 var cid = powerbi.data.createDataViewScopeIdentity(expr);                    
 
                 var columnInfo: MultiColumnInfo = {
-                    text:`${ci} - ${category.source.displayName}`,
+                    text:`${MultiColumnSlicer.translateCategory(category.source.displayName, ci)}`,
                     toolTipInfo: [{
                         displayName: `${category.identity.length} - ${tableName} / ${fieldName}`,
                         value: 'true',
@@ -114,14 +117,33 @@ module powerbi.visuals.samples {
             var table = dataView.table;
             if (!table) return viewModel;
 
-            // viewModel.text = dataView.categorical.categories[0].values[0];
-            // if (dataView.categorical) {
-            //     viewModel.selector = dataView.categorical.categories[0].identity
-            //         ? SelectionId.createWithId(dataView.categorical.categories[0].identity[0])
-            //         : SelectionId.createNull();
-            // }
-
             return viewModel;
+        }
+
+        public static translateCategory(category: string, index: number) : string {
+            //todo: make configurable and map category index instead
+            if(category.toLowerCase().indexOf("today") > 0)
+            {
+                return "Heute";
+            }
+
+            if(category.toLowerCase().indexOf("yesterday") > 0)
+            {
+                return "Gestern";
+            }
+
+            if(category.toLowerCase().indexOf("week") > 0)
+            {
+                return "Aktuelle Woche";
+            }
+
+            if(category.toLowerCase().indexOf("month") > 0)
+            {
+                return "Aktueller Monat";
+            }
+
+            return category;
+
         }
 
         public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstance[] {

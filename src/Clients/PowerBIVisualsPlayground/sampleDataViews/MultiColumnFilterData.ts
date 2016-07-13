@@ -37,6 +37,7 @@ module powerbi.visuals.sampleDataViews {
         public visuals: string[] = ['multiColumnSlicer'];
 
         private sampleData = [
+            [false, false, false, false, false, false],
             [false, false, true, false, false, false],
             [742731.43, 162066.43, 283085.78, 300263.49, 376074.57, 814724.34],
             [123455.43, 40566.43, 200457.78, 5000.49, 320000.57, 450000.34]
@@ -49,11 +50,17 @@ module powerbi.visuals.sampleDataViews {
 
         public getDataViews(): DataView[] {
 
-            var fieldExpr = powerbi.data.SQExprBuilder.fieldExpr({ column: { schema: 's', entity: "table1", name: "iscurrentweek" } });
+            var fieldExpr1 = powerbi.data.SQExprBuilder.fieldExpr({ column: { schema: 's', entity: "table1", name: "iscurrentweek" } });
+            var fieldExpr2 = powerbi.data.SQExprBuilder.fieldExpr({ column: { schema: 's', entity: "table1", name: "istoday" } });
 
             var categoryValues = [false, true];
-            var categoryIdentities = categoryValues.map(function (value) {
-                var expr = powerbi.data.SQExprBuilder.equal(fieldExpr, powerbi.data.SQExprBuilder.boolean(value));
+            var categoryIdentities1 = categoryValues.map(function (value) {
+                var expr = powerbi.data.SQExprBuilder.equal(fieldExpr1, powerbi.data.SQExprBuilder.boolean(value));
+                return powerbi.data.createDataViewScopeIdentity(expr);
+            });
+
+            var categoryIdentities2 = categoryValues.map(function (value) {
+                var expr = powerbi.data.SQExprBuilder.equal(fieldExpr2, powerbi.data.SQExprBuilder.boolean(value));
                 return powerbi.data.createDataViewScopeIdentity(expr);
             });
         
@@ -63,7 +70,13 @@ module powerbi.visuals.sampleDataViews {
                 columns: [
                     {
                         displayName: 'IsCurrentWeek',
-                        queryName: 'IsCurrentWeek',
+                        queryName: 'table1.IsCurrentWeek',
+                        type: powerbi.ValueType.fromDescriptor({ text: true }),
+                        roles: { Category: true }
+                    },
+                     {
+                        displayName: 'IsToday',
+                        queryName: 'table1.IsToday',
                         type: powerbi.ValueType.fromDescriptor({ text: true }),
                         roles: { Category: true }
                     },
@@ -93,25 +106,30 @@ module powerbi.visuals.sampleDataViews {
             var columns = [
                 {
                     source: dataViewMetadata.columns[0],
-                    // Sales Amount for 2014
+                    // cat1
                     values: this.sampleData[0],
                 },
                 {
                     source: dataViewMetadata.columns[1],
-                    // Sales Amount for 2014
+                    // cat2
                     values: this.sampleData[1],
+                },
+                {
+                    source: dataViewMetadata.columns[1],
+                    // Sales Amount for 2014
+                    values: this.sampleData[2],
                 },
                 {
                     source: dataViewMetadata.columns[2],
                     // Sales Amount for 2015
-                    values: this.sampleData[2],
+                    values: this.sampleData[3],
                 }
             ];
 
             var dataValues: DataViewValueColumns = DataViewTransform.createValueColumns(columns);
             var bla: any[] = this.sampleData[0];
             var tableDataValues = bla.map(function (a, idx) {
-                return [columns[0].values[idx], columns[1].values[idx], columns[2].values[idx]];
+                return [columns[0].values[idx], columns[1].values[idx], columns[2].values[idx], columns[3].values[idx]];
             });
 
             return [{
@@ -120,7 +138,12 @@ module powerbi.visuals.sampleDataViews {
                     categories: [{
                         source: dataViewMetadata.columns[0],
                         values: categoryValues,
-                        identity: categoryIdentities,
+                        identity: categoryIdentities1,
+                    },
+                    {
+                        source: dataViewMetadata.columns[1],
+                        values: categoryValues,
+                        identity: categoryIdentities2,
                     }],
                     values: dataValues
                 },
