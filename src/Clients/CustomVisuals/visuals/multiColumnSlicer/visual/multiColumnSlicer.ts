@@ -9,11 +9,11 @@ module powerbi.visuals.samples {
         columns: MultiColumnInfo[];
     }
 
-    export interface MultiColumnInfo {
+    export interface MultiColumnInfo extends SelectableDataPoint {
         text: string;
-        selector: SelectionId;
         toolTipInfo: TooltipDataItem[];
     }
+
 
     export class MultiColumnSlicer implements IVisual {
         
@@ -24,6 +24,8 @@ module powerbi.visuals.samples {
         private svgContainer: D3.Selection;
         private dataView: DataView;
         private selectiionManager: SelectionManager;    
+        private selectionHandler: ISelectionHandler;
+        private hostServices: IVisualHostServices;
 
         public init(options: VisualInitOptions): void {
             var viewport = options.viewport;           
@@ -32,7 +34,7 @@ module powerbi.visuals.samples {
                 .append("div")
                 .style("height","100%")
                 .style("width", "100%")
-                .text("Loading...");
+                .text("Lädt...");
 
             this.root.attr({
                 'height': viewport.height,
@@ -40,6 +42,9 @@ module powerbi.visuals.samples {
             });
 
             this.selectiionManager = new SelectionManager({ hostServices: options.host });
+            var interactivityService =  new InteractivityService(options.host);
+            this.selectionHandler = interactivityService; 
+            this.hostServices = options.host;
 
         }
 
@@ -51,6 +56,8 @@ module powerbi.visuals.samples {
 
             this.root.text("");
             var selectionManager = this.selectiionManager;
+            var selectionHandler : ISelectionHandler = this.selectionHandler;
+            var hostServices : IVisualHostServices = this.hostServices;
 
             for(var i = 0; i < viewModel.columns.length;i++)
             { 
@@ -62,20 +69,26 @@ module powerbi.visuals.samples {
                     .text(`${column.text}`)
                     .style('cursor', 'pointer')
                     .style('background-color', 'transparent')
-                    .on('click', function () {
+                    .on('click', function (d: MultiColumnInfo) {
                         var localColumn = column;
-                        selectionManager
-                            .select(this.__data__.selector)
-                            .then(ids => {
-                            
-                                d3.selectAll(".multiColumnSlicerCategory").style("background-color", "transparent");
+                        //d3.event.preventDefault();
+                        //selectionHandler.handleSelection(d, false);
+                        //selectionHandler.persistSelectionFilter(slicerProps.filterPropertyIdentifier);
+                    
+                        console.log(`huhu selectionHandler ${d.text} ${d.selected}`);
+                         selectionManager
+                             .select(this.__data__.identity)
+                             .then(ids => {    
+                                 d3.selectAll(".multiColumnSlicerCategory").style("background-color", "transparent");
                                 d3.select(this).style('background-color', ids.length > 0 ? "grey" : "transparent");
                                 console.log(ids);
                             }
                             );
+
+                        hostServices.persistProperties(this);
                     })
                     .data([column]);
-
+                
                 this.root.append("br");
 
                 TooltipManager.addTooltip(category, (tooltipEvent: TooltipEvent) => tooltipEvent.data.toolTipInfo);
@@ -105,10 +118,11 @@ module powerbi.visuals.samples {
                 var columnInfo: MultiColumnInfo = {
                     text:`${MultiColumnSlicer.translateCategory(category.source.displayName, ci)}`,
                     toolTipInfo: [{
-                        displayName: `${category.identity.length} - ${tableName} / ${fieldName}`,
+                        displayName: `${tableName} / ${fieldName}`,
                         value: 'true',
                     }],
-                    selector: SelectionId.createWithId(cid),
+                    identity: SelectionId.createWithId(cid),
+                    selected: false
                 };
 
                 viewModel.columns.push(columnInfo);
@@ -195,14 +209,8 @@ module powerbi.visuals.samples {
                 categorical: {
                     categories: {
                     for: { in: 'Category'},
-                    //dataReductionAlgorithm: {top:{}}
+                    dataReductionAlgorithm: { window: {} }
                 }},
-                // table: {
-                //     rows: {
-                //         for: { in: 'Values' },
-                //     },
-                //     rowCount: { preferred: { min: 1 } }
-                // },
             }],
             objects: {
                 general: {
