@@ -1,0 +1,87 @@
+//  public static converterOld(dataView: DataView): MultiColumnSlicerViewModel {
+
+
+        //    var viewModel: MultiColumnSlicerViewModel = {
+        //        columns: []
+        //    };
+
+        //     for(var ci = 0; ci < dataView.categorical.categories.length; ci++)
+        //     {
+        //         var category = dataView.categorical.categories[ci];
+        //         if(!category) continue;
+
+        //         var queryName = category.source.queryName;
+        //         var tableName = queryName.substr(0, queryName.indexOf("."));
+        //         var fieldName = queryName.substr(queryName.indexOf(".") + 1);
+        //         var fieldExpr = powerbi.data.SQExprBuilder.fieldExpr({ column: { schema: 's', entity: tableName, name: fieldName} });
+        //         var expr = powerbi.data.SQExprBuilder.equal(fieldExpr, powerbi.data.SQExprBuilder.boolean(true));  
+        //         var cid = powerbi.data.createDataViewScopeIdentity(expr);                    
+
+        //         var columnInfo: MultiColumnInfo = {
+        //             text:`${Helpers.translateCategory(category.source.displayName, ci)}`,
+        //             toolTipInfo: [{
+        //                 displayName: `${tableName} / ${fieldName}`,
+        //                 value: 'true',
+        //             }],
+        //             identity: SelectionId.createWithId(cid),
+        //             selected: false
+        //         };
+
+        //         viewModel.columns.push(columnInfo);
+        //     }
+
+        //     var table = dataView.table;
+        //     if (!table) return viewModel;
+
+        //     return viewModel;
+        // }
+
+
+
+ // public updateOld(options: VisualUpdateOptions) {
+        //     if (!options.dataViews && !options.dataViews[0]) return;
+        //     var dataView = this.dataView = options.dataViews[0];
+        //     var viewport = options.viewport;
+        //     var viewModel: MultiColumnSlicerViewModel = MultiColumnSlicer.converter(dataView);
+
+        //     this.root.text("");
+        //     var selectionManager = this.selectionManager;
+        //     var selectionHandler : ISelectionHandler = this.selectionHandler;
+        //     var hostServices : IVisualHostServices = this.hostServices;
+
+        //     for(var i = 0; i < viewModel.columns.length;i++)
+        //     { 
+        //         var column: MultiColumnInfo = viewModel.columns[i];
+        //         var category = this.root
+        //             .append('text')
+        //             .attr("class", "multiColumnSlicerCategory")
+        //             .attr("id", `col${i}`)
+        //             .text(`${column.text}`)
+        //             .style('cursor', 'pointer')
+        //             .style('background-color', 'transparent')
+        //             .on('click', function (d: MultiColumnInfo) {
+        //                 var localColumn = column;
+        //                 //d3.event.preventDefault();
+        //                 //selectionHandler.handleSelection(d, false);
+        //                 //selectionHandler.persistSelectionFilter(slicerProps.filterPropertyIdentifier);
+                    
+        //                 console.log(`huhu selectionHandler ${d.text} ${d.selected}`);
+        //                  selectionManager
+        //                      .select(this.__data__.identity)
+        //                      .then(ids => {    
+        //                          d3.selectAll(".multiColumnSlicerCategory").style("background-color", "transparent");
+        //                         d3.select(this).style('background-color', ids.length > 0 ? "grey" : "transparent");
+        //                         console.log(ids);
+        //                     }
+        //                     );
+
+        //                 hostServices.persistProperties(this);
+        //             })
+        //             .data([column]);
+                
+        //         this.root.append("br");
+
+        //         TooltipManager.addTooltip(category, (tooltipEvent: TooltipEvent) => tooltipEvent.data.toolTipInfo);
+                
+        //     }
+        // }

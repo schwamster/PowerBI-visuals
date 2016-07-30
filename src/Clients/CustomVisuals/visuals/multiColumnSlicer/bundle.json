@@ -5,7 +5,7 @@
         "name": "MultiColumnSlicer",
         "displayName": "Multi Column Slicer",
         "guid": "MultiColumnSlicer1443303142064",
-        "version": "0.2.1",
+        "version": "0.3.0",
         "build": "13.0.1100.210",
         "author": {
             "name": "Microsoft",

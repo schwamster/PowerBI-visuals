@@ -1,6 +1,6 @@
 /// <reference path="../../../_references.ts"/>
 
-module powerbi.visuals.multiColumnSlicer {
+module powerbi.visuals.samples {
     import SelectionManager = utility.SelectionManager; 
     import ClassAndSelector = jsCommon.CssConstants.ClassAndSelector;
     import createClassAndSelector = jsCommon.CssConstants.createClassAndSelector;
@@ -413,34 +413,6 @@ module powerbi.visuals.multiColumnSlicer {
         ]);
     }
 
-    export class Helpers {
-        public static translateCategory(category: string, index: number) : string {
-                    //todo: make configurable and map category index instead
-                    if(category.toLowerCase().indexOf("today") > 0)
-                    {
-                        return "Heute";
-                    }
-
-                    if(category.toLowerCase().indexOf("yesterday") > 0)
-                    {
-                        return "Gestern";
-                    }
-
-                    if(category.toLowerCase().indexOf("week") > 0)
-                    {
-                        return "Aktuelle Woche";
-                    }
-
-                    if(category.toLowerCase().indexOf("month") > 0)
-                    {
-                        return "Aktueller Monat";
-                    }
-
-                    return category;
-
-                }
-    }
-
     export interface MultiColumnSlicerConstructorOptions {
         behavior?: MultiColumnSlicerWebBehavior;
     }
@@ -823,44 +795,7 @@ module powerbi.visuals.multiColumnSlicer {
             return slicerData;
         }
 
-        //  public static converterOld(dataView: DataView): MultiColumnSlicerViewModel {
-
-
-        //    var viewModel: MultiColumnSlicerViewModel = {
-        //        columns: []
-        //    };
-
-        //     for(var ci = 0; ci < dataView.categorical.categories.length; ci++)
-        //     {
-        //         var category = dataView.categorical.categories[ci];
-        //         if(!category) continue;
-
-        //         var queryName = category.source.queryName;
-        //         var tableName = queryName.substr(0, queryName.indexOf("."));
-        //         var fieldName = queryName.substr(queryName.indexOf(".") + 1);
-        //         var fieldExpr = powerbi.data.SQExprBuilder.fieldExpr({ column: { schema: 's', entity: tableName, name: fieldName} });
-        //         var expr = powerbi.data.SQExprBuilder.equal(fieldExpr, powerbi.data.SQExprBuilder.boolean(true));  
-        //         var cid = powerbi.data.createDataViewScopeIdentity(expr);                    
-
-        //         var columnInfo: MultiColumnInfo = {
-        //             text:`${Helpers.translateCategory(category.source.displayName, ci)}`,
-        //             toolTipInfo: [{
-        //                 displayName: `${tableName} / ${fieldName}`,
-        //                 value: 'true',
-        //             }],
-        //             identity: SelectionId.createWithId(cid),
-        //             selected: false
-        //         };
-
-        //         viewModel.columns.push(columnInfo);
-        //     }
-
-        //     var table = dataView.table;
-        //     if (!table) return viewModel;
-
-        //     return viewModel;
-        // }
-
+        
 
 
         public init(options: VisualInitOptions): void {
@@ -916,54 +851,7 @@ module powerbi.visuals.multiColumnSlicer {
             this.updateInternal(resetScrollbarPosition);
         }
 
-        // public updateOld(options: VisualUpdateOptions) {
-        //     if (!options.dataViews && !options.dataViews[0]) return;
-        //     var dataView = this.dataView = options.dataViews[0];
-        //     var viewport = options.viewport;
-        //     var viewModel: MultiColumnSlicerViewModel = MultiColumnSlicer.converter(dataView);
-
-        //     this.root.text("");
-        //     var selectionManager = this.selectionManager;
-        //     var selectionHandler : ISelectionHandler = this.selectionHandler;
-        //     var hostServices : IVisualHostServices = this.hostServices;
-
-        //     for(var i = 0; i < viewModel.columns.length;i++)
-        //     { 
-        //         var column: MultiColumnInfo = viewModel.columns[i];
-        //         var category = this.root
-        //             .append('text')
-        //             .attr("class", "multiColumnSlicerCategory")
-        //             .attr("id", `col${i}`)
-        //             .text(`${column.text}`)
-        //             .style('cursor', 'pointer')
-        //             .style('background-color', 'transparent')
-        //             .on('click', function (d: MultiColumnInfo) {
-        //                 var localColumn = column;
-        //                 //d3.event.preventDefault();
-        //                 //selectionHandler.handleSelection(d, false);
-        //                 //selectionHandler.persistSelectionFilter(slicerProps.filterPropertyIdentifier);
-                    
-        //                 console.log(`huhu selectionHandler ${d.text} ${d.selected}`);
-        //                  selectionManager
-        //                      .select(this.__data__.identity)
-        //                      .then(ids => {    
-        //                          d3.selectAll(".multiColumnSlicerCategory").style("background-color", "transparent");
-        //                         d3.select(this).style('background-color', ids.length > 0 ? "grey" : "transparent");
-        //                         console.log(ids);
-        //                     }
-        //                     );
-
-        //                 hostServices.persistProperties(this);
-        //             })
-        //             .data([column]);
-                
-        //         this.root.append("br");
-
-        //         TooltipManager.addTooltip(category, (tooltipEvent: TooltipEvent) => tooltipEvent.data.toolTipInfo);
-                
-        //     }
-        // }
-
+       
         private updateInternal(resetScrollbarPosition: boolean) {
             this.updateSlicerBodyDimensions();
 
@@ -1150,34 +1038,6 @@ module powerbi.visuals.multiColumnSlicer {
                         else
                             return TextMeasurementService.getTailoredTextOrDefault(textProperties, this.settings.slicerText.width - MultiColumnSlicer.chicletTotalInnerRightLeftPaddings - MultiColumnSlicer.cellTotalInnerBorders - settings.slicerText.outlineWeight);
                     });
-
-                    var slicerImg = rowSelection.selectAll('.slicer-img-wrapper');
-                    slicerImg
-                        .style('height', settings.images.imageSplit + '%')
-                        .classed('hidden', (d: MultiColumnInfo) => {
-                            if (!(d.imageURL)) {
-                                return true;
-                            }
-                            if (settings.images.imageSplit < 10) {
-                                return true;
-                            }
-                        })
-                        .style('display', (d: MultiColumnInfo) => (d.imageURL) ? 'flex' : 'none')
-                        .classed('stretchImage', settings.images.stretchImage)
-                        .classed('bottomImage', settings.images.bottomImage)
-                        .style('background-image', (d: MultiColumnInfo) => {
-                            return d.imageURL ? `url(${d.imageURL})` : '';
-                        });
-
-                    rowSelection.selectAll('.slicer-text-wrapper')
-                        .style('height', (d: MultiColumnInfo) => {
-                            return d.imageURL ? (100 - settings.images.imageSplit) + '%' : '100%';
-                        })
-                        .classed('hidden', (d: MultiColumnInfo) => {
-                            if (settings.images.imageSplit > 90) {
-                                return true;
-                            }
-                        });
 
                     rowSelection.selectAll('.slicerItemContainer').style({
                         'color': settings.slicerText.fontColor,
@@ -1376,8 +1236,6 @@ module powerbi.visuals.multiColumnSlicer {
                     return this.enumerateHeader(data);
                 case 'general':
                     return this.enumerateGeneral(data);
-                // case 'images':
-                //     return this.enumerateImages(data);
             }
         }
 
@@ -1438,15 +1296,7 @@ module powerbi.visuals.multiColumnSlicer {
                     selfFilterEnabled: slicerSettings.general.selfFilterEnabled
                 }
             }];
-        }
-
-       
-
-         public destroy(): void {
-            this.root = null;
-        }
-
-        
+        }        
     }
 
     module MultiColumnSlicerChartConversion {
@@ -1567,11 +1417,15 @@ module powerbi.visuals.multiColumnSlicer {
                         var categorySelectionId: SelectionId = SelectionIdBuilder.builder().withCategory(this.category, categoryIndex).createSelectionId();
                         this.dataPoints.push({
                             identity: categorySelectionId,
-                            category: categoryLabel,
+                            category: `${categoryLabel} - Bastian` ,
                             imageURL: imageURL,
                             value: value,
                             selected: categoryIsSelected,
-                            selectable: selectable
+                            selectable: selectable,
+                            toolTipInfo: [{
+                                displayName: `${categoryLabel} / ${value}`,
+                                value: 'true',
+                            }],
                         });
                     }
                     if (numberOfScopeIds != null && numberOfScopeIds > this.numberOfCategoriesSelectedInData) {
@@ -1636,7 +1490,7 @@ module powerbi.visuals.multiColumnSlicer {
                 if (!d.selectable) {
                     return;
                 }
-                var settings: ChicletSlicerSettings = this.slicerSettings;
+                var settings: MultiColumnSlicerSettings = this.slicerSettings;
                 d3.event.preventDefault();
                 if (d3.event.altKey && settings.general.multiselect) {
                     var selectedIndexes = jQuery.map(this.dataPoints, function (d, index) { if (d.selected) return index; });
@@ -1737,6 +1591,38 @@ module powerbi.visuals.multiColumnSlicer {
                 });
                 d3.select(this).classed('slicerItem-disabled', !d.selectable);
             });
+        }
+    }
+
+        module explore.util {
+        export function hexToRGBString(hex: string, transparency?: number): string {
+
+            // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+            var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+            hex = hex.replace(shorthandRegex, function (m, r, g, b) {
+                return r + r + g + g + b + b;
+            });
+
+            // Hex format which return the format r-g-b
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+
+            var rgb = result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+
+            // Wrong input
+            if (rgb === null) {
+                return '';
+            }
+
+            if (!transparency && transparency !== 0) {
+                return "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
+            }
+            else {
+                return "rgba(" + rgb.r + "," + rgb.g + "," + rgb.b + "," + transparency + ")";
+            }
         }
     }
 }
