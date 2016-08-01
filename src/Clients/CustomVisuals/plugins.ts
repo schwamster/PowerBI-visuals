@@ -33,7 +33,7 @@ module powerbi.visuals.plugins {
         capabilities: samples.Sunburst.capabilities,
         create: () => new samples.Sunburst()
     };
-    import mc = powerbi.visuals.multiColumnSlicer;
+    import mc = powerbi.visuals.samples;
 
     export let multiColumnSlicer: IVisualPlugin = {
         name: 'multiColumnSlicer',
@@ -82,8 +82,8 @@ module powerbi.visuals.plugins {
 	
 	export var chicletSlicer: IVisualPlugin = {
         name: 'chicletSlicer',
-        capabilities: samples.ChicletSlicer.capabilities,
-        create: () => new samples.ChicletSlicer()
+        capabilities: samples2.ChicletSlicer.capabilities,
+        create: () => new samples2.ChicletSlicer()
     };
 	
 	export var chordChart: IVisualPlugin = {

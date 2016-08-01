@@ -26,7 +26,7 @@
 
 /// <reference path="../../../_references.ts"/>
 
-module powerbi.visuals.samples {
+module powerbi.visuals.samples2 {
 
     import ClassAndSelector = jsCommon.CssConstants.ClassAndSelector;
     import createClassAndSelector = jsCommon.CssConstants.createClassAndSelector;
