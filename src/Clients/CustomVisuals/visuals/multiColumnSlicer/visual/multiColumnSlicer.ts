@@ -8,6 +8,7 @@ module powerbi.visuals.samples {
     import SemanticFilter = powerbi.data.SemanticFilter;
     import SQExprConverter = powerbi.data.SQExprConverter;
     import SelectionIdBuilder = powerbi.visuals.SelectionIdBuilder;
+    
 
     export interface MultiColumnInfo extends SelectableDataPoint {
         toolTipInfo: TooltipDataItem[];
@@ -23,8 +24,6 @@ module powerbi.visuals.samples {
 
     export interface MultiColumnSlicerViewModel 
     {
-        categorySourceName: string;
-        formatString: string;
         slicerSettings: MultiColumnSlicerSettings;
         hasSelectionOverride?: boolean;
         slicerDataPoints: MultiColumnInfo[];
@@ -330,16 +329,12 @@ module powerbi.visuals.samples {
             outlineColor: string;
             outlineWeight: number;
             borderStyle: string;
+            language: string;
         };
         slicerItemContainer: {
             marginTop: number;
             marginLeft: number;
         };
-        // images: {
-        //     imageSplit: number;
-        //     stretchImage: boolean;
-        //     bottomImage: boolean;
-        // };
     }
 
     export var multiColumnSlicerProps = {
@@ -377,15 +372,10 @@ module powerbi.visuals.samples {
             outlineColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'outlineColor' },
             outlineWeight: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'outlineWeight' },
             borderStyle: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'borderStyle' },
+            language: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'language' },
         },
-        // images: {
-        //     imageSplit: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'imageSplit' },
-        //     stretchImage: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'stretchImage' },
-        //     bottomImage: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'bottomImage' },
-        // },
         selectedPropertyIdentifier: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'selected' },
         filterPropertyIdentifier: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'filter' },
-        formatString: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'formatString' },
         hasSavedSelection: true,
     };
 
@@ -426,17 +416,7 @@ module powerbi.visuals.samples {
                     name: 'Category',
                     kind: VisualDataRoleKind.Grouping,
                     displayName: 'Category',
-                },
-                // {
-                //     name: 'Values',
-                //     kind: VisualDataRoleKind.Measure,
-                //     displayName: 'Values',
-                // },
-                // {
-                //     name: 'Image',
-                //     kind: VisualDataRoleKind.Grouping,
-                //     displayName: 'Image',
-                // },
+                }
             ],
             objects: {
                 general: {
@@ -521,7 +501,7 @@ module powerbi.visuals.samples {
                     }
                 },
                 rows: {
-                    displayName: 'Chiclets',
+                    displayName: 'Custom',
                     properties: {
                         fontColor: {
                             displayName: 'Text color',
@@ -580,25 +560,13 @@ module powerbi.visuals.samples {
                             displayName: 'Outline Style',
                             type: { enumeration: BorderStyle.type }
                         },
+                        language: {
+                            displayName: 'Language',
+                            description: "Choose language e.g. de for german, en for english",
+                            type: { text: true }
+                        },
                     }
                 },
-                // images: {
-                //     displayName: 'Images',
-                //     properties: {
-                //         imageSplit: {
-                //             displayName: 'Image Split',
-                //             type: { numeric: true }
-                //         },
-                //         stretchImage: {
-                //             displayName: 'Stretch image',
-                //             type: { bool: true }
-                //         },
-                //         bottomImage: {
-                //             displayName: 'Bottom image',
-                //             type: { bool: true }
-                //         },
-                //     }
-                // },
             },
             dataViewMappings: [{
                 conditions: [
@@ -669,14 +637,14 @@ module powerbi.visuals.samples {
                 },
                 header: {
                     borderBottomWidth: 1,
-                    show: true,
+                    show: false,
                     outline: 'BottomOnly',
                     fontColor: '#a6a6a6',
                     background: null,
                     textSize: 10,
                     outlineColor: '#a6a6a6',
                     outlineWeight: 1,
-                    title: '',
+                    title: 'Filter',
                 },
                 headerText: {
                     marginLeft: 8,
@@ -698,7 +666,7 @@ module powerbi.visuals.samples {
                     outlineColor: '#000000',
                     outlineWeight: 1,
                     borderStyle: 'Cut',
-
+                    language: "de"
                 },
                 slicerItemContainer: {
                     // The margin is assigned in the less file. This is needed for the height calculations.
@@ -733,8 +701,7 @@ module powerbi.visuals.samples {
                 !(dataView.categorical.categories[0].values.length > 0)) {
                 return;
             }
-            var converter = new MultiColumnSlicerChartConversion.MultiColumnSlicerConverter(dataView, interactivityService);
-            converter.convert();
+           
             var slicerData: MultiColumnSlicerViewModel;
             var defaultSettings: MultiColumnSlicerSettings = this.DefaultStyleProperties();
             var objects: DataViewObjects = dataView.metadata.objects;
@@ -770,11 +737,11 @@ module powerbi.visuals.samples {
                 defaultSettings.slicerText.outlineColor = DataViewObjects.getFillColor(objects, multiColumnSlicerProps.rows.outlineColor, defaultSettings.slicerText.outlineColor);
                 defaultSettings.slicerText.outlineWeight = DataViewObjects.getValue<number>(objects, multiColumnSlicerProps.rows.outlineWeight, defaultSettings.slicerText.outlineWeight);
                 defaultSettings.slicerText.borderStyle = DataViewObjects.getValue<string>(objects, multiColumnSlicerProps.rows.borderStyle, defaultSettings.slicerText.borderStyle);
-
-                // defaultSettings.images.imageSplit = DataViewObjects.getValue<number>(objects, chicletSlicerProps.images.imageSplit, defaultSettings.images.imageSplit);
-                // defaultSettings.images.stretchImage = DataViewObjects.getValue<boolean>(objects, chicletSlicerProps.images.stretchImage, defaultSettings.images.stretchImage);
-                // defaultSettings.images.bottomImage = DataViewObjects.getValue<boolean>(objects, chicletSlicerProps.images.bottomImage, defaultSettings.images.bottomImage);
+                defaultSettings.slicerText.language = DataViewObjects.getValue<string>(objects, multiColumnSlicerProps.rows.language, defaultSettings.slicerText.language);
             }
+            var converter = new MultiColumnSlicerChartConversion.MultiColumnSlicerConverter(dataView, interactivityService, defaultSettings);
+            converter.convert();
+            
 
             if(defaultSettings.general.selfFilterEnabled && searchText) {
                 searchText = searchText.toLowerCase();
@@ -783,8 +750,6 @@ module powerbi.visuals.samples {
 
             var categories: DataViewCategoricalColumn = dataView.categorical.categories[0];
             slicerData = {
-                categorySourceName: categories.source.displayName,
-                formatString: valueFormatter.getFormatString(categories.source, multiColumnSlicerProps.formatString),
                 slicerSettings: defaultSettings,
                 slicerDataPoints: converter.dataPoints,
             };
@@ -870,7 +835,6 @@ module powerbi.visuals.samples {
             data.slicerSettings.slicerText.outlineWeight = data.slicerSettings.slicerText.outlineWeight < 0 ? 0 : data.slicerSettings.slicerText.outlineWeight;
             data.slicerSettings.slicerText.height = data.slicerSettings.slicerText.height < 0 ? 0 : data.slicerSettings.slicerText.height;
             data.slicerSettings.slicerText.width = data.slicerSettings.slicerText.width < 0 ? 0 : data.slicerSettings.slicerText.width;
-            //data.slicerSettings.images.imageSplit = data.slicerSettings.images.imageSplit < 0 ? 0 : data.slicerSettings.images.imageSplit;
 
             data.slicerSettings.general.columns = data.slicerSettings.general.columns < 0 ? 0 : data.slicerSettings.general.columns;
             data.slicerSettings.general.rows = data.slicerSettings.general.rows < 0 ? 0 : data.slicerSettings.general.rows;
@@ -1012,7 +976,7 @@ module powerbi.visuals.samples {
                 if (data && settings) {
                     this.slicerHeader.classed('hidden', !settings.header.show);
                     this.slicerHeader.select(MultiColumnSlicer.HeaderText.selector)
-                        .text(settings.header.title.trim() !== "" ? settings.header.title.trim() : this.slicerData.categorySourceName)
+                        .text(settings.header.title.trim() !== "" ? settings.header.title.trim() : "")
                         .style({
                             'border-style': this.getBorderStyle(settings.header.outline),
                             'border-color': settings.header.outlineColor,
@@ -1029,9 +993,8 @@ module powerbi.visuals.samples {
                     var slicerText = rowSelection.selectAll(MultiColumnSlicer.LabelText.selector);
                     var textProperties = MultiColumnSlicer.getChicletTextProperties(settings.slicerText.textSize);
 
-                    var formatString = data.formatString;
                     slicerText.text((d: MultiColumnInfo) => {
-                        var text = valueFormatter.format(d.category, formatString);
+                        var text = valueFormatter.format(d.category);
                         textProperties.text = text;
                         if (this.settings.slicerText.width === 0)
                             return powerbi.TextMeasurementService.getTailoredTextOrDefault(textProperties, (this.currentViewport.width / this.settings.general.columns) - MultiColumnSlicer.chicletTotalInnerRightLeftPaddings - MultiColumnSlicer.cellTotalInnerBorders - settings.slicerText.outlineWeight);
@@ -1277,6 +1240,7 @@ module powerbi.visuals.samples {
                     outlineWeight: slicerSettings.slicerText.outlineWeight,
                     fontColor: slicerSettings.slicerText.fontColor,
                     borderStyle: slicerSettings.slicerText.borderStyle,
+                    language: slicerSettings.slicerText.language,
                 }
             }];
         }
@@ -1304,6 +1268,7 @@ module powerbi.visuals.samples {
             private dataViewCategorical: DataViewCategorical;
             private dataViewMetadata: DataViewMetadata;
             private columns: DataViewCategoryColumn[];
+            private settings: MultiColumnSlicerSettings;
 
             private interactivityService: IInteractivityService;
 
@@ -1311,11 +1276,12 @@ module powerbi.visuals.samples {
             public dataPoints: MultiColumnInfo[];
             public hasSelectionOverride: boolean;
 
-            public constructor(dataView: DataView, interactivityService: IInteractivityService) {
+            public constructor(dataView: DataView, interactivityService: IInteractivityService, settings: MultiColumnSlicerSettings) {
 
                 var dataViewCategorical = dataView.categorical;
                 this.dataViewCategorical = dataViewCategorical;
                 this.dataViewMetadata = dataView.metadata;
+                this.settings = settings;
 
                 if (dataViewCategorical.categories && dataViewCategorical.categories.length > 0) {
                     this.columns = dataViewCategorical.categories;
@@ -1339,7 +1305,6 @@ module powerbi.visuals.samples {
                         var categoryIdentities = category.identity;
                         var categoryValues = category.values;
                         var categoryColumnRef = <data.SQExpr[]>category.identityFields;
-                        var categoryFormatString = valueFormatter.getFormatString(category.source, multiColumnSlicerProps.formatString);
 
                         var objects = this.dataViewMetadata ? <any>this.dataViewMetadata.objects : undefined;
 
@@ -1380,7 +1345,6 @@ module powerbi.visuals.samples {
                         }
 
                         var dataViewCategorical = this.dataViewCategorical;
-                        var formatStringProp = multiColumnSlicerProps.formatString;
                         var value: number = -Infinity;
                         var imageURL: string = '';
                         for (var categoryIndex: number = 0, categoryCount = categoryValues.length; categoryIndex < categoryCount; categoryIndex++) {
@@ -1412,13 +1376,21 @@ module powerbi.visuals.samples {
                             }
 
                             var categoryValue = categoryValues[categoryIndex];
-                            var categoryLabel = valueFormatter.format(categoryValue, categoryFormatString);
 
-                            
-                            var categorySelectionId: SelectionId = SelectionIdBuilder.builder().withCategory(category, categoryIndex).createSelectionId();
+                            var categoryLabel = MultiColumnSlicerConverter.translateCategory(category.source.displayName, this.settings.slicerText.language);                          
+
+                            var queryName = category.source.queryName;
+                            var tableName = queryName.substr(0, queryName.indexOf("."));
+                            var fieldName = queryName.substr(queryName.indexOf(".") + 1);
+                            var fieldExpr = powerbi.data.SQExprBuilder.fieldExpr({ column: { schema: undefined  , entity: tableName, name: fieldName} });
+                            var expr = powerbi.data.SQExprBuilder.equal(fieldExpr, powerbi.data.SQExprBuilder.boolean(true));  
+                            var cid = powerbi.data.createDataViewScopeIdentity(expr); 
+
+                            var categorySelectionId: SelectionId = SelectionIdBuilder.builder().withCategoryIdentity(category, cid).createSelectionId();
+                                     
                             this.dataPoints.push({
                                 identity: categorySelectionId,
-                                category: `${categoryLabel} - Bastian - ${category.source.displayName}` ,
+                                category: categoryLabel,
                                 imageURL: imageURL,
                                 value: value,
                                 selected: categoryIsSelected,
@@ -1434,10 +1406,56 @@ module powerbi.visuals.samples {
                             this.hasSelectionOverride = true;
                         }
 
-                break;    
             }
                 
                 }
+            }
+
+            public static translateCategory(category: string, language: string) : string 
+            {
+               if(category.toLowerCase().indexOf("today") > 0)
+                {
+                    switch (language) {
+                        case "en":
+                            return "Today";
+                        default:
+                            return "Heute";
+                    }
+                    
+                }
+
+                if(category.toLowerCase().indexOf("yesterday") > 0)
+                {
+                     switch (language) {
+                        case "en":
+                            return "Yesterday";
+                        default:
+                            return "Gestern";
+                    }
+                }
+
+                if(category.toLowerCase().indexOf("week") > 0)
+                {
+                     switch (language) {
+                        case "en":
+                            return "Current Week";
+                        default:
+                            return "Aktuelle Woche";
+                    }
+                }
+
+                if(category.toLowerCase().indexOf("month") > 0)
+                {
+                    switch (language) {
+                        case "en":
+                            return "Current Month";
+                        default:
+                            return "Aktueller Monat";
+                    }
+                }
+
+                return category;
+
             }
         }
     }

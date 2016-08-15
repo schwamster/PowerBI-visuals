@@ -5,11 +5,11 @@
         "name": "MultiColumnSlicer",
         "displayName": "Multi Column Slicer",
         "guid": "MultiColumnSlicer1443303142064",
-        "version": "0.3.0",
+        "version": "0.9.1",
         "build": "13.0.1100.210",
         "author": {
-            "name": "Microsoft",
-            "email": "pbicvsupport@microsoft.com"
+            "name": "greenelephant it consulting ab",
+            "email": "bastian@greenelephant.io"
         },
         "licenseTerms": "http://go.microsoft.com/fwlink/?LinkID=627540",
         "privacyTerms": "http://go.microsoft.com/fwlink/?LinkID=627541",
