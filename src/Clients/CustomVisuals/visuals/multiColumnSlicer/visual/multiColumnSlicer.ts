@@ -1413,7 +1413,7 @@ module powerbi.visuals.samples {
 
             public static translateCategory(category: string, language: string) : string 
             {
-               if(category.toLowerCase().indexOf("today") > 0)
+               if(category.toLowerCase() == "istoday")
                 {
                     switch (language) {
                         case "en":
@@ -1424,7 +1424,7 @@ module powerbi.visuals.samples {
                     
                 }
 
-                if(category.toLowerCase().indexOf("yesterday") > 0)
+                if(category.toLowerCase() == "isyesterday")
                 {
                      switch (language) {
                         case "en":
@@ -1434,7 +1434,7 @@ module powerbi.visuals.samples {
                     }
                 }
 
-                if(category.toLowerCase().indexOf("week") > 0)
+                if(category.toLowerCase() == "iscurrentweek")
                 {
                      switch (language) {
                         case "en":
@@ -1444,13 +1444,93 @@ module powerbi.visuals.samples {
                     }
                 }
 
-                if(category.toLowerCase().indexOf("month") > 0)
+                if(category.toLowerCase() == "iscurrentmonth")
                 {
                     switch (language) {
                         case "en":
                             return "Current Month";
                         default:
                             return "Aktueller Monat";
+                    }
+                }
+
+                if(category.toLowerCase() == "islastmonth")
+                {
+                    switch (language) {
+                        case "en":
+                            return "Last Month";
+                        default:
+                            return "Letzten Monat";
+                    }
+                }
+
+                if(category.toLowerCase() == "islastthreemonth")
+                {
+                    switch (language) {
+                        case "en":
+                            return "Last Three Months";
+                        default:
+                            return "Letzten drei Monate";
+                    }
+                }
+
+                if(category.toLowerCase() == "servicelevelistodaydone")
+                {
+                    switch (language) {
+                        case "en":
+                            return "Done Today";
+                        default:
+                            return "Heute erledigt";
+                    }
+                }
+
+                if(category.toLowerCase() == "servicelevelisyesterdaydone")
+                {
+                    switch (language) {
+                        case "en":
+                            return "Done Yesterday";
+                        default:
+                            return "Gestern erledigt";
+                    }
+                }
+
+                if(category.toLowerCase() == "serviceleveliscurrentweekdone")
+                {
+                    switch (language) {
+                        case "en":
+                            return "Done Current Week";
+                        default:
+                            return "Diese Woche erledigt";
+                    }
+                }
+
+                if(category.toLowerCase() == "servicelevelislastweekdone")
+                {
+                    switch (language) {
+                        case "en":
+                            return "Done Last Week";
+                        default:
+                            return "Letzte Woche erledigt";
+                    }
+                }
+
+                if(category.toLowerCase() == "serviceleveliscurrentmonthdone")
+                {
+                    switch (language) {
+                        case "en":
+                            return "Done Current Month";
+                        default:
+                            return "Diesen Monat erledigt";
+                    }
+                }
+
+                if(category.toLowerCase() == "servicelevelislastmonthdone")
+                {
+                    switch (language) {
+                        case "en":
+                            return "Done Last Month";
+                        default:
+                            return "Letzten Monat erledigt";
                     }
                 }
 
